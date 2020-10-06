@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="./node_modules/nexmo-client/dist/nexmoClient.js"></script>
+  </head>
+  <body>
+    <h1>Inbound app call</h1>
+    <p id="notification">Lines are open for calls...</p>
+    <br />
+    <button id="button">Answer</button>
+    <script>
+      const USER_JWT ="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDA4OTA4NDgsImp0aSI6IjhiMTUyOTcwLWZkZDYtMTFlYS1iZDY2LWE1YTUxNmNkMWZjYyIsImV4cCI6MTYwMDkxMjQ0OCwiYWNsIjp7InBhdGhzIjp7Ii8qL3VzZXJzLyoqIjp7fSwiLyovY29udmVyc2F0aW9ucy8qKiI6e30sIi8qL3Nlc3Npb25zLyoqIjp7fSwiLyovZGV2aWNlcy8qKiI6e30sIi8qL2ltYWdlLyoqIjp7fSwiLyovbWVkaWEvKioiOnt9LCIvKi9hcHBsaWNhdGlvbnMvKioiOnt9LCIvKi9wdXNoLyoqIjp7fSwiLyova25vY2tpbmcvKioiOnt9fX0sInN1YiI6IkJvYiIsImFwcGxpY2F0aW9uX2lkIjoiYmIwZmM1YjItMDkyZi00MWJlLWI5MjItOGI3YmE4ZDA4NTc3In0.j8BTCjOeWiba3KZD9S2FBecry202gz2yRA2ETurQSkFyiwju87kzzD7X-cy40eafldAHd2d0Ikugd7PDClwjkBuT89jthTAcMTdK1KL3Y-WuGbGTfNR50ZkNj-OaDFx1O-oUIiUMlkNz4MtXkRmXJ4gNgVVLyBsDl-ZXfceZF0i7kD9wT5u-hPNiYxIeSkr5mo8tXsg75F5sA634XKdt3gBiP9NytTg8oGvvgO-9uEHnxDCAAFJ6Xlle4BvLq5_dhzYIIGpVVSPXZkbdoNTmBCgz_XAzNW9c70PvAeOq_ew5JyPMDqedj4pEYPY5g9yWFLIBTmLZ-bFSkjgZ0clfSQ";
+
+      new NexmoClient({ debug: true })
+        .login(USER_JWT)
+        .then(app => {
+          let btn = document.getElementById("button");
+          let notification = document.getElementById("notification");
+          app.on("member:call", (member, call) => {
+            notification.innerHTML = "Inbound app call - click to answer...";
+            btn.addEventListener("click", event => {
+              event.preventDefault();
+              call.answer();
+            });
+          });
+          app.on("call:status:changed", call => {
+            notification.innerHTML = "Call Status: " + call.status;
+          });
+        })
+        .catch(console.error);
+    </script>
+  </body>
+</html>

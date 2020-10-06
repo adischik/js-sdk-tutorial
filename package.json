@@ -1,0 +1,23 @@
+{
+  "name": "JS-SDK-Tutorial",
+  "version": "1.0.0",
+  "description": "Following the tutorials here:  https://developer.nexmo.com/client-sdk/tutorials/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adischik/js-sdk-tutorial.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/adischik/js-sdk-tutorial/issues"
+  },
+  "homepage": "https://github.com/adischik/js-sdk-tutorial#readme",
+  "dependencies": {
+    "nexmo-client": "^6.0.15"
+  }
+}

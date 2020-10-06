@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="./node_modules/nexmo-client/dist/nexmoClient.js"></script>
+  </head>
+  <body>
+    <form id="call-app-form">
+      <h1>Call App from App</h1>
+      <input type="text" name="username" value="" />
+      <input type="submit" value="Call" />
+    </form>
+    <button id="btn-hangup" type="button">Hang Up</button>
+    <script>
+      const USER_JWT = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDA4OTA4MjcsImp0aSI6IjdlYjA4ZGYwLWZkZDYtMTFlYS1iZjAxLTk3NjgxYjJjZDljYSIsImV4cCI6MTYwMDkxMjQyNiwiYWNsIjp7InBhdGhzIjp7Ii8qL3VzZXJzLyoqIjp7fSwiLyovY29udmVyc2F0aW9ucy8qKiI6e30sIi8qL3Nlc3Npb25zLyoqIjp7fSwiLyovZGV2aWNlcy8qKiI6e30sIi8qL2ltYWdlLyoqIjp7fSwiLyovbWVkaWEvKioiOnt9LCIvKi9hcHBsaWNhdGlvbnMvKioiOnt9LCIvKi9wdXNoLyoqIjp7fSwiLyova25vY2tpbmcvKioiOnt9fX0sInN1YiI6IkFsaWNlIiwiYXBwbGljYXRpb25faWQiOiJiYjBmYzViMi0wOTJmLTQxYmUtYjkyMi04YjdiYThkMDg1NzcifQ.spRzr2BC-kRa3Bsr-6f5QQfW9figEasHGguptdT9ir5aHB9djTcc5xUUj11HDB1zKA_Q6z84Ib7EwAQol68k7R9-9jvURrD_jeu3VY53wiUKp74fzgi5eeX5YJPsHW0TjuclsRlaqGEdSlBQSC9xNiS7ZK6nWBiMG_yQzYVuAaXUgjpynHbp5rYFbZNS607nF30Ns8LngQBVuMjhuEXCepu32rik8IG0EwOVcSUib_RZE86ExiWT1dQZ51lLapWX1zJyQUIc42TqzYioBwnTrTRjp7eyOlEIkLXUfUxN1DzzfgI69uo73Yt5RQAGZ-VkVJsd1zl5PLbLkNhFGndSEA";
+      const callAppForm = document.getElementById("call-app-form");
+      const btnHangUp = document.getElementById("btn-hangup");
+      new NexmoClient({ debug: true })
+        .login(USER_JWT)
+        .then(app => {
+          callAppForm.addEventListener("submit", event => {
+            event.preventDefault();
+            let username = callAppForm.children.username.value;
+            app.callServer(username, "app");
+          });
+
+          app.on("member:call", (member, call) => {
+            btnHangUp.addEventListener("click", () => {
+              console.log("Hanging up...");
+              call.hangUp();
+            });
+          });
+        })
+        .catch(console.error);
+    </script>
+  </body>
+</html>

@@ -1,36 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script src="./node_modules/nexmo-client/dist/nexmoClient.js"></script>
-  </head>
-  <body>
-    <form id="call-app-form">
-      <h1>Call App from App</h1>
-      <input type="text" name="username" value="" />
-      <input type="submit" value="Call" />
-    </form>
-    <button id="btn-hangup" type="button">Hang Up</button>
-    <script>
-      const USER_JWT = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDA4OTA4MjcsImp0aSI6IjdlYjA4ZGYwLWZkZDYtMTFlYS1iZjAxLTk3NjgxYjJjZDljYSIsImV4cCI6MTYwMDkxMjQyNiwiYWNsIjp7InBhdGhzIjp7Ii8qL3VzZXJzLyoqIjp7fSwiLyovY29udmVyc2F0aW9ucy8qKiI6e30sIi8qL3Nlc3Npb25zLyoqIjp7fSwiLyovZGV2aWNlcy8qKiI6e30sIi8qL2ltYWdlLyoqIjp7fSwiLyovbWVkaWEvKioiOnt9LCIvKi9hcHBsaWNhdGlvbnMvKioiOnt9LCIvKi9wdXNoLyoqIjp7fSwiLyova25vY2tpbmcvKioiOnt9fX0sInN1YiI6IkFsaWNlIiwiYXBwbGljYXRpb25faWQiOiJiYjBmYzViMi0wOTJmLTQxYmUtYjkyMi04YjdiYThkMDg1NzcifQ.spRzr2BC-kRa3Bsr-6f5QQfW9figEasHGguptdT9ir5aHB9djTcc5xUUj11HDB1zKA_Q6z84Ib7EwAQol68k7R9-9jvURrD_jeu3VY53wiUKp74fzgi5eeX5YJPsHW0TjuclsRlaqGEdSlBQSC9xNiS7ZK6nWBiMG_yQzYVuAaXUgjpynHbp5rYFbZNS607nF30Ns8LngQBVuMjhuEXCepu32rik8IG0EwOVcSUib_RZE86ExiWT1dQZ51lLapWX1zJyQUIc42TqzYioBwnTrTRjp7eyOlEIkLXUfUxN1DzzfgI69uo73Yt5RQAGZ-VkVJsd1zl5PLbLkNhFGndSEA";
-      const callAppForm = document.getElementById("call-app-form");
-      const btnHangUp = document.getElementById("btn-hangup");
-      new NexmoClient({ debug: true })
-        .login(USER_JWT)
-        .then(app => {
-          callAppForm.addEventListener("submit", event => {
-            event.preventDefault();
-            let username = callAppForm.children.username.value;
-            app.callServer(username, "app");
-          });
 
-          app.on("member:call", (member, call) => {
-            btnHangUp.addEventListener("click", () => {
-              console.log("Hanging up...");
-              call.hangUp();
-            });
-          });
-        })
-        .catch(console.error);
+<head>
+    <script src="./node_modules/nexmo-client/dist/nexmoClient.js"></script>
+    <style>
+        input, button {
+            font-size: 1rem;
+        }
+        #hangup {
+            display:none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Call Phone from App</h1>
+    <label for="phone-number">Your Phone Number:</label>
+    <input type="text" name="phone-number" value="" placeholder="i.e. 14155550100" id="phone-number" size="30">
+    <button type="button" id="call">Call</button>
+    <button type="button" id="hangup">Hang Up</button>
+    <div id="status"></div>
+
+    <script>
+        const USER_JWT = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDIwOTIxMDMsImp0aSI6IjZlZWI5NTcwLTA4YzMtMTFlYi1hYzY0LTJkOWRkZjljMDgxZCIsImV4cCI6MTYwMjExMzcwMSwiYWNsIjp7InBhdGhzIjp7Ii8qL3VzZXJzLyoqIjp7fSwiLyovY29udmVyc2F0aW9ucy8qKiI6e30sIi8qL3Nlc3Npb25zLyoqIjp7fSwiLyovZGV2aWNlcy8qKiI6e30sIi8qL2ltYWdlLyoqIjp7fSwiLyovbWVkaWEvKioiOnt9LCIvKi9hcHBsaWNhdGlvbnMvKioiOnt9LCIvKi9wdXNoLyoqIjp7fSwiLyova25vY2tpbmcvKioiOnt9fX0sInN1YiI6IkFsaWNlIiwiYXBwbGljYXRpb25faWQiOiJiYjBmYzViMi0wOTJmLTQxYmUtYjkyMi04YjdiYThkMDg1NzcifQ.CzYRRKZ-6a1dfmXr6E6XP3Jqqjk9_Gr_-0kZnZowfbv3rvXVZDJo-G9LBdknz2ipbIGtXzjplE94DNVnYn8heH5coJOUEpCxKnDopJSjoMsHfQ-J2mHc4ow4Nz2QSIL2R9TlVZdrHHDR4z9v8T6SbZ9W9tbrXeaVbt2VoUdjgrconX3mbbIWSbJioPG6Ka08bda-Tzpgrpr__jxLFuMCYmZbAJhIpdzUEbll5cj40AlNWFWTWPeLFjDDGGpoO9XRtd5aeteKUMDBuWp25BZd56r9E6zdKBhW_nNsgBi9U14NyZWOlEtdfciXSgJDnQiU4XglFotY82kJ0lnuGFPouw";
+        const phoneNumberInput = document.getElementById("phone-number");
+        const callButton = document.getElementById("call");
+        const hangupButton = document.getElementById("hangup");
+        const statusElement = document.getElementById("status");
+        new NexmoClient({ debug: true })
+            .login(USER_JWT)
+            .then(app => {
+                callButton.addEventListener("click", event => {
+                    event.preventDefault();
+                    let number = phoneNumberInput.value;
+                    if (number !== ""){
+                        app.callServer(number);
+                    } else {
+                        statusElement.innerText = 'Please enter your phone number.';
+                    }
+                });
+                app.on("member:call", (member, call) => {
+                    hangupButton.addEventListener("click", () => {
+                        call.hangUp();
+                    });
+                });
+                app.on("call:status:changed",(call) => {
+                    statusElement.innerText = `Call status: ${call.status}`;
+                    if (call.status === call.CALL_STATUS.STARTED){
+                        callButton.style.display = "none";
+                        hangupButton.style.display = "inline";
+                    }
+                    if (call.status === call.CALL_STATUS.COMPLETED){
+                        callButton.style.display = "inline";
+                        hangupButton.style.display = "none";
+                    }
+                });
+            })
+            .catch(console.error);
     </script>
-  </body>
+
+</body>
+
 </html>
